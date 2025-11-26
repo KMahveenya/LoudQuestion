@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <div id="status">Disconnected</div>
+    <div id="clients">Connected clients: 0</div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+
+        socket.on('connect', () => {
+            document.getElementById('status').textContent = `Connected (ID: ${socket.id})`;
+        });
+
+        socket.on('clientsCount', (count) => {
+            document.getElementById('clients').textContent = `Connected clients: ${count}`;
+        });
+
+        socket.on('disconnect', () => {
+            document.getElementById('status').textContent = 'Disconnected';
+        });
+    </script>
+</body>
+</html>
