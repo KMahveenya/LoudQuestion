@@ -2,7 +2,12 @@ import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDiscon
 import { Server, Socket } from 'socket.io';
 import { RoomsService } from './rooms.service';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true
+  }
+})
 export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
