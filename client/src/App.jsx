@@ -1,13 +1,17 @@
 import './App.css'
-import TestComponent from './components/TestComponent'
-import { SocketProvider } from './contexts/SocketContext'
+import LoginPage from './pages/LoginPage/LoginPage'
+import GamePage from './pages/GamePage/GamePage'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 function App() {
 
   return (
-    <SocketProvider>
-      <TestComponent></TestComponent>
-    </SocketProvider>
+    <Router>
+      <Routes>
+        <Route path='/' element={<LoginPage />} />
+        <Route path='/game' element={<GamePage />} />
+      </Routes>
+    </Router>
   )
 }
 

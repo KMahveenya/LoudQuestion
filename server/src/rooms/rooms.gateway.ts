@@ -18,35 +18,32 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: Socket) {
-    this.roomsService.leaveAllRooms(client.id);
+    this.roomsService.leaveRoom(client.id);
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('createRoom')
-  handleCreateRoom(client: Socket, roomId: string) {
-    this.roomsService.createRoom(roomId);
-    client.emit('roomCreated', roomId);
+  @SubscribeMessage('getRooms')
+  handleGetRooms(client: Socket) {
     this.updateRoomsList();
   }
 
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, roomId: string) {
-    this.roomsService.joinRoom(roomId, client.id);
+  handleJoinRoom(client: Socket, data: Object) {
+    let roomId = data['roomId'];
+    if (roomId == null) {
+      roomId = this.roomsService.createRoom(data['roomname']);
+    }
+    this.roomsService.joinRoom(roomId, data['username'], client.id);
     client.join(roomId);
     
-    client.emit('joinedRoom', roomId);
-    
-    this.server.to(roomId).emit('roomUsers', {
-      roomId,
-      users: this.roomsService.getRoomClients(roomId)
-    });
+    this.server.to(roomId).emit('roomUsers', this.roomsService.getRoomClients(roomId));
     
     this.updateRoomsList();
   }
 
   @SubscribeMessage('leaveRoom')
   handleLeaveRoom(client: Socket, roomId: string) {
-    this.roomsService.leaveRoom(roomId, client.id);
+    this.roomsService.leaveRoom(client.id);
     client.leave(roomId);
     
     client.emit('leftRoom', roomId);
@@ -57,15 +54,6 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     
     this.updateRoomsList();
-  }
-
-  @SubscribeMessage('message')
-  handleMessage(client: Socket, payload: { roomId: string, message: string }) {
-    this.server.to(payload.roomId).emit('message', {
-      from: client.id,
-      message: payload.message,
-      roomId: payload.roomId
-    });
   }
 
   private updateRoomsList() {

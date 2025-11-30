@@ -1,47 +1,60 @@
 import { Injectable } from '@nestjs/common';
 
+interface User {
+  id: string,
+  username: string
+}
+
+interface roomInfo {
+  name: string,
+  users: Map<string, string>
+}
+
 @Injectable()
 export class RoomsService {
-  private rooms: Map<string, Set<string>> = new Map();
+  private rooms: Map<string, roomInfo> = new Map();
 
-  createRoom(roomId: string): void {
-    if (!this.rooms.has(roomId)) {
-      this.rooms.set(roomId, new Set());
+  createRoom(roomName: string): string {
+    const roomId = this.generateRoomId();
+    this.rooms.set(roomId, {name: roomName, users: new Map()});
+    return roomId;
+  }
+
+  joinRoom(roomId: string, username: string, clientId: string): void {
+    this.rooms.get(roomId)?.users.set(clientId, username);
+  }
+
+  leaveRoom(clientId: string): void {
+    for (const [roomId, roomInfo] of this.rooms.entries()) {
+        if (roomInfo.users.has(clientId)) {
+            roomInfo.users.delete(clientId);
+            
+            if (roomInfo.users.size === 0) {
+                this.rooms.delete(roomId);
+            }
+            
+            break;
+        }
     }
   }
 
-  joinRoom(roomId: string, clientId: string): void {
-    this.createRoom(roomId);
-    this.rooms.get(roomId)?.add(clientId);
-  }
-
-  leaveRoom(roomId: string, clientId: string): void {
-    if (this.rooms.has(roomId)) {
-      this.rooms.get(roomId)?.delete(clientId);
-      
-      if (this.rooms.get(roomId)?.size === 0) {
-        this.rooms.delete(roomId);
-      }
-    }
-  }
-
-  leaveAllRooms(clientId: string): void {
-    this.rooms.forEach((clients, roomId) => {
-      if (clients.has(clientId)) {
-        this.leaveRoom(roomId, clientId);
-      }
-    });
-  }
-
-  getRoomClients(roomId: string): string[] {
+  getRoomClients(roomId: string): Object {
     let room = this.rooms.get(roomId);
 
-    return this.rooms.has(roomId) && room
-      ? Array.from(room) 
-      : [];
+    return this.rooms.has(roomId) && room?.users
+      ? Object.fromEntries(room.users) 
+      : {};
   }
 
-  getRooms(): string[] {
-    return Array.from(this.rooms.keys());
+  getRooms(): Object {
+    let roomNames: Object = {};
+    for (let [key, roomInfo] of this.rooms.entries()) {
+      roomNames[key] = roomInfo.name;
+    }
+    return roomNames;
+  }
+
+  private generateRoomId(): string {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 }
