@@ -1,8 +1,15 @@
 import { useSocket } from "../../hooks/useSocket";
+import { useEffect } from "react";
 
 function GamePage() {
-    const {roomUsers} = useSocket();
-    const qwe = Object.values(roomUsers);
+    const {roomUsers, sendMessage} = useSocket();
+
+    useEffect(() => {
+        return () => {
+            sendMessage('leaveRoom');
+        };
+    }, []);
+
     return (
         <div>
             {Object.values(roomUsers).map((username) => 

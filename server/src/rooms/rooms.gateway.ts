@@ -42,16 +42,11 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('leaveRoom')
-  handleLeaveRoom(client: Socket, roomId: string) {
-    this.roomsService.leaveRoom(client.id);
+  handleLeaveRoom(client: Socket) {
+    const roomId = this.roomsService.leaveRoom(client.id);
     client.leave(roomId);
     
-    client.emit('leftRoom', roomId);
-    
-    this.server.to(roomId).emit('roomUsers', {
-      roomId,
-      users: this.roomsService.getRoomClients(roomId)
-    });
+    this.server.to(roomId).emit('roomUsers', this.roomsService.getRoomClients(roomId));
     
     this.updateRoomsList();
   }

@@ -24,7 +24,7 @@ export class RoomsService {
     this.rooms.get(roomId)?.users.set(clientId, username);
   }
 
-  leaveRoom(clientId: string): void {
+  leaveRoom(clientId: string): string {
     for (const [roomId, roomInfo] of this.rooms.entries()) {
         if (roomInfo.users.has(clientId)) {
             roomInfo.users.delete(clientId);
@@ -33,9 +33,11 @@ export class RoomsService {
                 this.rooms.delete(roomId);
             }
             
-            break;
+            return roomId;
         }
     }
+
+    return '';
   }
 
   getRoomClients(roomId: string): Object {

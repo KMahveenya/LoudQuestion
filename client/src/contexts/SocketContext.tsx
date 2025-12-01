@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import io from 'socket.io-client';
 
 interface SocketProviderProps {
@@ -12,6 +12,7 @@ interface SocketContextType {
     sendMessage: (event: string, data?: any) => void;
 
     rooms: Object;
+
     roomUsers: Object;
 }
 
@@ -70,11 +71,11 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
         }
     }, []);
 
-    function sendMessage(event: string, data?: any) {
+    const sendMessage = useCallback((event: string, data?: any) => {
         if (socket && isConnected) {
             socket.emit(event, data);
         }
-    }
+    }, [isConnected]);
 
     const value = {
         socket,
@@ -83,6 +84,7 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
         sendMessage, 
 
         rooms,
+
         roomUsers,
     };
 

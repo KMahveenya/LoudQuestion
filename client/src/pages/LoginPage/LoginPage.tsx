@@ -15,6 +15,11 @@ function LoginPage() {
         navigate('/game');
     }
 
+    function handleJoinRoom(roomId: string) {
+        sendMessage('joinRoom', {roomId, username, roomname});
+        navigate('/game');
+    }
+
     return (
         <div>
             <form action={handleRoomCreate}>
@@ -27,9 +32,26 @@ function LoginPage() {
                 <input type="submit" value="Создать комнату" />
             </form>
 
-            {Object.values(rooms)}
-
-
+            <table>
+                <thead>
+                    <tr>
+                        <td>№</td>
+                        <td>Название комнаты</td>
+                        <td>Количество человек</td>
+                        <td>Войти в комнату</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {Object.entries(rooms).map(([key, value], index) =>
+                        <tr key={key}>
+                            <td>{index + 1}</td>
+                            <td>{value}</td>
+                            <td>-</td>
+                            <td><button onClick={() => handleJoinRoom(key)}>Присоединиться</button></td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 }
