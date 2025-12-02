@@ -34,27 +34,29 @@ function LoginPage() {
                     <SubmitButton type="submit" value="Создать комнату" />
                 </Form>
             </FormContainer>
-
-            <TableContainer>
-                <Table>
-                    <thead>
-                        <TableRow>
-                            <TableCell>№</TableCell>
-                            <TableCell>Комнаты</TableCell>
-                            <TableCell>Войти</TableCell>
-                        </TableRow>
-                    </thead>
-                    <tbody>
-                        {Object.entries(rooms).map(([key, value], index) =>
-                            <TableRow key={key}>
-                                <TableCell>{index + 1}</TableCell>
-                                <TableCell>{value}</TableCell>
-                                <TableCell><JoinButton onClick={() => handleJoinRoom(key)}>Присоединиться</JoinButton></TableCell>
+            
+            {Object.entries(rooms).length > 0 &&
+                <TableContainer>
+                    <Table>
+                        <thead>
+                            <TableRow>
+                                <TableCell>№</TableCell>
+                                <TableCell>Комнаты</TableCell>
+                                <TableCell>Войти</TableCell>
                             </TableRow>
-                        )}
-                    </tbody>
-                </Table>
-            </TableContainer>
+                        </thead>
+                        <tbody>
+                            {Object.entries(rooms).map(([key, value], index) =>
+                                <TableRow key={key}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{value}</TableCell>
+                                    <TableCell><JoinButton onClick={() => handleJoinRoom(key)}>Присоединиться</JoinButton></TableCell>
+                                </TableRow>
+                            )}
+                        </tbody>
+                    </Table>
+                </TableContainer>
+            }
         </Container>
     );
 }

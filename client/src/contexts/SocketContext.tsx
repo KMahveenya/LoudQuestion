@@ -14,6 +14,7 @@ interface SocketContextType {
     rooms: Object;
 
     roomUsers: Object;
+    roomOwner: string | null;
 }
 
 export const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -26,6 +27,7 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
     const [rooms, setRooms] = useState({});
 
     const [roomUsers, setRoomUsers] = useState({});
+    const [roomOwner, setRoomOwner] = useState<string | null>(null);
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000', {
@@ -63,6 +65,10 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
             setRooms(rooms);
         });
 
+        newSocket.on('roomOwner', (owner: string) => {
+            setRoomOwner(owner);
+        });
+
         return () => {
             newSocket.disconnect();
             setSocket(null);
@@ -86,6 +92,7 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
         rooms,
 
         roomUsers,
+        roomOwner,
     };
 
     return (

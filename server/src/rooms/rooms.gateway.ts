@@ -31,12 +31,13 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleJoinRoom(client: Socket, data: Object) {
     let roomId = data['roomId'];
     if (roomId == null) {
-      roomId = this.roomsService.createRoom(data['roomname']);
+      roomId = this.roomsService.createRoom(client.id, data['roomname']);
     }
-    this.roomsService.joinRoom(roomId, data['username'], client.id);
+    const owner = this.roomsService.joinRoom(roomId, data['username'], client.id);
     client.join(roomId);
-    
+
     this.server.to(roomId).emit('roomUsers', this.roomsService.getRoomClients(roomId));
+    this.server.to(roomId).emit('roomOwner', owner);
     
     this.updateRoomsList();
   }

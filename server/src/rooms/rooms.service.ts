@@ -8,20 +8,24 @@ interface User {
 interface roomInfo {
   name: string,
   users: Map<string, string>
+  ownerClient: string | null;
+  askingClient: string | null
+  answeringClient: string | null
 }
 
 @Injectable()
 export class RoomsService {
   private rooms: Map<string, roomInfo> = new Map();
 
-  createRoom(roomName: string): string {
+  createRoom(clientId: string, roomName: string): string {
     const roomId = this.generateRoomId();
-    this.rooms.set(roomId, {name: roomName, users: new Map()});
+    this.rooms.set(roomId, {name: roomName, users: new Map(), ownerClient: clientId, askingClient: null, answeringClient: null});
     return roomId;
   }
 
-  joinRoom(roomId: string, username: string, clientId: string): void {
+  joinRoom(roomId: string, username: string, clientId: string): string | null {
     this.rooms.get(roomId)?.users.set(clientId, username);
+    return this.rooms.get(roomId)?.ownerClient || '';
   }
 
   leaveRoom(clientId: string): string {
