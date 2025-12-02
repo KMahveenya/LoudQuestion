@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSocket } from "../../hooks/useSocket";
 import { useNavigate } from "react-router-dom";
+import { Container, FormContainer, Form, Label, TextInput, SubmitButton, TableContainer, Table, TableRow, TableCell, JoinButton } from "./style";
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -21,38 +22,40 @@ function LoginPage() {
     }
 
     return (
-        <div>
-            <form action={handleRoomCreate}>
-                <label htmlFor="username">Имя пользователя:</label>
-                <input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
+        <Container>
+            <FormContainer>
+                <Form action={handleRoomCreate}>
+                    <Label htmlFor="username">Имя пользователя:</Label>
+                    <TextInput id="username" type="text" placeholder="Введите свое имя" value={username} onChange={(e) => setUsername(e.target.value)}/>
 
-                <label htmlFor="roomname">Имя комнаты:</label>
-                <input id="roomname" type="text" value={roomname} onChange={(e) => setRoomname(e.target.value)}/>
+                    <Label htmlFor="roomname">Имя комнаты:</Label>
+                    <TextInput id="roomname" type="text" placeholder="Введите имя комнаты" value={roomname} onChange={(e) => setRoomname(e.target.value)}/>
 
-                <input type="submit" value="Создать комнату" />
-            </form>
+                    <SubmitButton type="submit" value="Создать комнату" />
+                </Form>
+            </FormContainer>
 
-            <table>
-                <thead>
-                    <tr>
-                        <td>№</td>
-                        <td>Название комнаты</td>
-                        <td>Количество человек</td>
-                        <td>Войти в комнату</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Object.entries(rooms).map(([key, value], index) =>
-                        <tr key={key}>
-                            <td>{index + 1}</td>
-                            <td>{value}</td>
-                            <td>-</td>
-                            <td><button onClick={() => handleJoinRoom(key)}>Присоединиться</button></td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        </div>
+            <TableContainer>
+                <Table>
+                    <thead>
+                        <TableRow>
+                            <TableCell>№</TableCell>
+                            <TableCell>Комнаты</TableCell>
+                            <TableCell>Войти</TableCell>
+                        </TableRow>
+                    </thead>
+                    <tbody>
+                        {Object.entries(rooms).map(([key, value], index) =>
+                            <TableRow key={key}>
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>{value}</TableCell>
+                                <TableCell><JoinButton onClick={() => handleJoinRoom(key)}>Присоединиться</JoinButton></TableCell>
+                            </TableRow>
+                        )}
+                    </tbody>
+                </Table>
+            </TableContainer>
+        </Container>
     );
 }
 
