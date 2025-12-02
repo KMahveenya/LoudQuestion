@@ -1,10 +1,9 @@
 import { useSocket } from "../../hooks/useSocket";
 import { useEffect, useState } from "react";
-import { Container } from "./style";
+import { Container, HeaderMessage, TableContainer, UsersTable, TableRow, UserName, UserRole, RoleImage, SubmitButton, ErrorMessage} from "./style";
 import crownImage from '../../assets/images/crown.png';
 import askerImage from '../../assets/images/asker.png';
 import readerImage from '../../assets/images/reader.png';
-import { send } from "vite";
 
 function GamePage() {
     const {clientId, roomUsers, roomOwner, sendMessage} = useSocket();
@@ -58,38 +57,41 @@ function GamePage() {
 
     return (
         <Container>
+            {clientId == roomOwner ? (
+                <HeaderMessage>Назначьте задающего и читающего</HeaderMessage>
+            ) : (
+                <HeaderMessage>Хост назначает роли...</HeaderMessage>
+            )}
+            <TableContainer>
+                <UsersTable>
+                    <tbody>
+                        {Object.entries(roomUsers).map(([id, username], index) => (
+                            <TableRow key={index}>
+                                <UserRole>
+                                    {id == roomOwner && <RoleImage src={crownImage} alt="crown" />}
+                                    {userRoles.get(id) == 'asker' && <RoleImage src={askerImage} alt="askerImage" />}
+                                    {userRoles.get(id) == 'reader' && <RoleImage src={readerImage} alt="readerImage" />}
+                                </UserRole>
+                                {clientId == roomOwner && clientId != id ? (
+                                    <UserName onClick={() => handleChangeRole(id)}>
+                                        {username}
+                                    </UserName>
+                                ) : (
+                                    <UserName>
+                                        {username}
+                                    </UserName>
+                                )}
+                            </TableRow>
+                        ))}
+                    </tbody>
+                </UsersTable>
+            </TableContainer>
+
             {clientId == roomOwner && (
-                <p>Назначьте задающего и читающего</p>
+                <SubmitButton onClick={handleConfirmRoles}>Подтвердить</SubmitButton>
             )}
 
-            <table>
-                <tbody>
-                    {Object.entries(roomUsers).map(([id, username], index) => (
-                        <tr key={index}>
-                            <td>
-                                {id == roomOwner && <img src={crownImage} alt="crown" />}
-                                {userRoles.get(id) == 'asker' && <img src={askerImage} alt="askerImage" />}
-                                {userRoles.get(id) == 'reader' && <img src={readerImage} alt="readerImage" />}
-                            </td>
-                            {clientId == roomOwner && clientId != id ? (
-                                <td onClick={() => handleChangeRole(id)}>
-                                    {username}
-                                </td>
-                            ) : (
-                                <td>
-                                    {username}
-                                </td>
-                            )}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            {clientId == roomOwner && (
-                <button onClick={handleConfirmRoles}>Подтвердить</button>
-            )}
-
-            {error && <p>{error}</p>}
+            {error && <ErrorMessage>{error}</ErrorMessage>}
         </Container>
     );
 }
