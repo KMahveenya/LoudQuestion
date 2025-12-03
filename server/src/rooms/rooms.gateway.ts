@@ -36,7 +36,7 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const owner = this.roomsService.joinRoom(roomId, data['username'], client.id);
     client.join(roomId);
 
-    this.server.to(roomId).emit('roomUsers', this.roomsService.getRoomClients(roomId));
+    this.server.to(roomId).emit('roomUsers', roomId, this.roomsService.getRoomClients(roomId));
     this.server.to(roomId).emit('roomOwner', owner);
     
     this.updateRoomsList();
@@ -47,9 +47,20 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const roomId = this.roomsService.leaveRoom(client.id);
     client.leave(roomId);
     
-    this.server.to(roomId).emit('roomUsers', this.roomsService.getRoomClients(roomId));
+    this.server.to(roomId).emit('roomUsers', roomId, this.roomsService.getRoomClients(roomId));
     
     this.updateRoomsList();
+  }
+
+  @SubscribeMessage('userRoles')
+  handleUserRoles(client: Socket, data: Object) {
+    
+    const roomId = data['roomId'];
+    const asker = data['asker'];
+    const reader = data['reader'];
+    this.roomsService.setRoles(roomId, asker, reader);
+    console.log(asker, reader);
+    this.server.to(roomId).emit('roles', asker, reader);
   }
 
   private updateRoomsList() {

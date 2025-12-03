@@ -6,7 +6,7 @@ import askerImage from '../../assets/images/asker.png';
 import readerImage from '../../assets/images/reader.png';
 
 function GamePage() {
-    const {clientId, roomUsers, roomOwner, sendMessage} = useSocket();
+    const {clientId, roomId, roomUsers, roomOwner, asker, reader, sendMessage} = useSocket();
     const [userRoles, setUserRoles] = useState<Map<string, "asker" | "reader">>(new Map());
 
     const [error, setError] = useState<string | null>(null);
@@ -49,7 +49,7 @@ function GamePage() {
         })
 
         if (asker.length == 1 && reader.length == 1) {
-            sendMessage('userRoles', {asker: asker[0], reader: reader[0]})
+            sendMessage('userRoles', {roomId, asker: asker[0], reader: reader[0]})
         } else {
             setError("Нужно выбрать по одному задающему и читающему");
         }
@@ -68,11 +68,21 @@ function GamePage() {
                         {Object.entries(roomUsers).map(([id, username], index) => (
                             <TableRow key={index}>
                                 <UserRole>
-                                    {id == roomOwner && <RoleImage src={crownImage} alt="crown" />}
-                                    {userRoles.get(id) == 'asker' && <RoleImage src={askerImage} alt="askerImage" />}
-                                    {userRoles.get(id) == 'reader' && <RoleImage src={readerImage} alt="readerImage" />}
+                                    {(() => {
+                                        const isOwner = id == roomOwner;
+                                        const isAsker = userRoles.get(id) == 'asker' || asker == id;
+                                        const isReader = userRoles.get(id) == 'reader' || reader == id;
+                                        
+                                        if (isAsker) {
+                                            return <RoleImage src={askerImage} alt="askerImage" />;
+                                        } else if (isReader) {
+                                            return <RoleImage src={readerImage} alt="readerImage" />;
+                                        } else if (isOwner) {
+                                            return <RoleImage src={crownImage} alt="crownImage" />;
+                                        }
+                                    })()}
                                 </UserRole>
-                                {clientId == roomOwner && clientId != id ? (
+                                {clientId == roomOwner ? (
                                     <UserName onClick={() => handleChangeRole(id)}>
                                         {username}
                                     </UserName>

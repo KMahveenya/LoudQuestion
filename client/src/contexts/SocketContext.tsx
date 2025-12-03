@@ -13,8 +13,11 @@ interface SocketContextType {
 
     rooms: Object;
 
+    roomId: string | null;
     roomUsers: Object;
     roomOwner: string | null;
+    asker: string | null;
+    reader: string | null;
 }
 
 export const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -26,8 +29,12 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
 
     const [rooms, setRooms] = useState({});
 
+    const [roomId, setRoomId] = useState(null);
     const [roomUsers, setRoomUsers] = useState({});
     const [roomOwner, setRoomOwner] = useState<string | null>(null);
+    const [asker, setAsker] = useState<string | null>(null);
+    const [reader, setReader] = useState<string | null>(null);
+
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000', {
@@ -49,6 +56,7 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
         newSocket.on('disconnect', () => {
             setIsConnected(false);
             setClientId(null);
+            setRoomId(null);
         });
 
         newSocket.on('reconnect', () => {
@@ -57,8 +65,9 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
             newSocket.emit('getRooms');
         });
 
-        newSocket.on('roomUsers', (roomUsers) => {
+        newSocket.on('roomUsers', (roomId, roomUsers) => {
             setRoomUsers(roomUsers);
+            setRoomId(roomId);
         });
 
         newSocket.on('roomsList', (rooms: Object) => {
@@ -67,6 +76,11 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
 
         newSocket.on('roomOwner', (owner: string) => {
             setRoomOwner(owner);
+        });
+
+        newSocket.on('roles', (asker: string, reader: string) => {
+            setAsker(asker);
+            setReader(reader);
         });
 
         return () => {
@@ -91,8 +105,11 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
 
         rooms,
 
+        roomId,
         roomUsers,
         roomOwner,
+        asker,
+        reader,
     };
 
     return (

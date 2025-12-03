@@ -9,8 +9,8 @@ interface roomInfo {
   name: string,
   users: Map<string, string>
   ownerClient: string | null;
-  askingClient: string | null
-  answeringClient: string | null
+  asker: string | null
+  reader: string | null
 }
 
 @Injectable()
@@ -19,7 +19,7 @@ export class RoomsService {
 
   createRoom(clientId: string, roomName: string): string {
     const roomId = this.generateRoomId();
-    this.rooms.set(roomId, {name: roomName, users: new Map(), ownerClient: clientId, askingClient: null, answeringClient: null});
+    this.rooms.set(roomId, {name: roomName, users: new Map(), ownerClient: clientId, asker: null, reader: null});
     return roomId;
   }
 
@@ -58,6 +58,14 @@ export class RoomsService {
       roomNames[key] = roomInfo.name;
     }
     return roomNames;
+  }
+
+  setRoles(roomId: string, asker: string, reader: string): void {
+    const room = this.rooms.get(roomId);
+    if (room) {
+      room.asker = asker;
+      room.reader = reader;
+    }
   }
 
   private generateRoomId(): string {
