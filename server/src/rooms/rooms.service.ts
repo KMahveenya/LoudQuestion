@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-interface User {
-  id: string,
-  username: string
-}
-
 interface roomInfo {
   name: string,
   users: Map<string, string>
   ownerClient: string | null;
-  asker: string | null
-  reader: string | null
+  asker: string | null;
+  reader: string | null;
+  question: string | null;
+  answer: string | null;
 }
 
 @Injectable()
@@ -19,7 +16,7 @@ export class RoomsService {
 
   createRoom(clientId: string, roomName: string): string {
     const roomId = this.generateRoomId();
-    this.rooms.set(roomId, {name: roomName, users: new Map(), ownerClient: clientId, asker: null, reader: null});
+    this.rooms.set(roomId, {name: roomName, users: new Map(), ownerClient: clientId, asker: null, reader: null, question: null, answer: null});
     return roomId;
   }
 
@@ -65,6 +62,14 @@ export class RoomsService {
     if (room) {
       room.asker = asker;
       room.reader = reader;
+    }
+  }
+
+  setQuestionAndAnswer(roomId: string, question: string, answer: string): void {
+    const room = this.rooms.get(roomId);
+    if (room) {
+      room.question = question;
+      room.answer = answer;
     }
   }
 

@@ -54,13 +54,20 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('userRoles')
   handleUserRoles(client: Socket, data: Object) {
-    
     const roomId = data['roomId'];
     const asker = data['asker'];
     const reader = data['reader'];
     this.roomsService.setRoles(roomId, asker, reader);
-    console.log(asker, reader);
     this.server.to(roomId).emit('roles', asker, reader);
+  }
+
+  @SubscribeMessage('questionAndAnswer')
+  handleQuestionAndAnswer(client: Socket, data: Object) {
+    const roomId = data['roomId'];
+    const question = data['question'];
+    const answer = data['answer'];
+    this.roomsService.setQuestionAndAnswer(roomId, question, answer);
+    this.server.to(roomId).emit('gameReady');
   }
 
   private updateRoomsList() {

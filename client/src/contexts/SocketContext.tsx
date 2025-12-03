@@ -18,6 +18,7 @@ interface SocketContextType {
     roomOwner: string | null;
     asker: string | null;
     reader: string | null;
+    gameReady: boolean;
 }
 
 export const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -34,7 +35,7 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
     const [roomOwner, setRoomOwner] = useState<string | null>(null);
     const [asker, setAsker] = useState<string | null>(null);
     const [reader, setReader] = useState<string | null>(null);
-
+    const [gameReady, setGameReady] = useState(false);
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000', {
@@ -57,6 +58,7 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
             setIsConnected(false);
             setClientId(null);
             setRoomId(null);
+            setGameReady(false);
         });
 
         newSocket.on('reconnect', () => {
@@ -81,6 +83,10 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
         newSocket.on('roles', (asker: string, reader: string) => {
             setAsker(asker);
             setReader(reader);
+        });
+
+        newSocket.on('gameReady', () => {
+            setGameReady(true);
         });
 
         return () => {
@@ -110,6 +116,7 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
         roomOwner,
         asker,
         reader,
+        gameReady,
     };
 
     return (
