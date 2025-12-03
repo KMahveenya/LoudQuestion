@@ -59,6 +59,8 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
             setClientId(null);
             setRoomId(null);
             setGameReady(false);
+            setAsker(null);
+            setReader(null);
         });
 
         newSocket.on('reconnect', () => {
