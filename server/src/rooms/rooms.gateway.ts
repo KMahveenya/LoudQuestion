@@ -70,6 +70,35 @@ export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(roomId).emit('gameReady');
   }
 
+  @SubscribeMessage('startGame')
+  handleStartGame(client: Socket, data: Object) {
+    const roomId = data['roomId'];
+    const reader = this.roomsService.getReader(roomId);
+    const question = this.roomsService.getQuestion(roomId);
+    this.server.to(reader).emit('question', question);
+    this.server.to(roomId).emit('gameStart');
+  }
+
+  @SubscribeMessage('enterAnswer')
+  handleEnterAnswer(client: Socket, data: Object) {
+    const roomId = data['roomId'];
+    const allAnswers = this.roomsService.incrementAnswersCount(roomId);
+    if (allAnswers) {
+      const reader = this.roomsService.getReader(roomId);
+      const asker = this.roomsService.getAsker(roomId);
+      const answer = this.roomsService.getAnswer(roomId);
+      this.server.to(reader).emit('answer', answer);
+      this.server.to(asker).emit('gameEnd');
+    }
+  }
+
+  @SubscribeMessage('endGame')
+  handleEndGame(client: Socket, data: Object) {
+    const roomId = data['roomId'];
+    this.server.to(roomId).emit('clearInfo');
+    this.roomsService.clearInfo(roomId);
+  }
+
   private updateRoomsList() {
     this.server.emit('roomsList', this.roomsService.getRooms());
   }

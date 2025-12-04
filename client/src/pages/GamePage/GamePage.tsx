@@ -1,12 +1,13 @@
 import { useSocket } from "../../hooks/useSocket";
 import { useEffect } from "react";
-import { Container, SubmitButton} from "./style";
+import { Container} from "./style";
 import HeaderMessage from "../../components/HeaderMessage";
 import UserTable from "../../components/UserTable";
 import QuestionAndAnswerForm from "../../components/QuestionAndAnswerForm";
+import GamePart from "../../components/GamePart";
 
 function GamePage() {
-    const {clientId, roomId, roomOwner, gameReady, sendMessage} = useSocket();
+    const {sendMessage} = useSocket();
 
     useEffect(() => {
         return () => {
@@ -14,19 +15,12 @@ function GamePage() {
         };
     }, []);
 
-    function handleStartGame() {
-        sendMessage('startGame', {roomId});
-    }
-
     return (
         <Container>
             <HeaderMessage />
             <UserTable />
             <QuestionAndAnswerForm />
-
-            {gameReady && clientId == roomOwner && (
-                <SubmitButton onClick={handleStartGame}>Начать игру</SubmitButton>
-            )}
+            <GamePart />
         </Container>
     );
 }

@@ -1,12 +1,17 @@
 import { useSocket } from "../../hooks/useSocket";
 import { FormContainer, Form, Label, TextArea, TextInput, SubmitButton } from "./style";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function QuestionAndAnswerForm() {
-    const {roomId, clientId, asker, gameReady, sendMessage} = useSocket();
+    const {roomId, clientId, asker, gameReady, gameStart, gameEnd, sendMessage} = useSocket();
 
     const [question, setQuestion] = useState<string>('');
     const [answer, setAnswer] = useState<string>('');
+
+    useEffect(() => {
+        setQuestion('');
+        setAnswer('');
+    }, [gameEnd]);
 
     function handleConfirmQuestionAndAnswer() {
         sendMessage('questionAndAnswer', {roomId, question, answer});
@@ -14,7 +19,7 @@ function QuestionAndAnswerForm() {
 
     return (
         <>
-            {clientId == asker && !gameReady && (
+            {clientId == asker && !gameReady && !gameStart && !gameEnd && (
                 <FormContainer>
                     <Form action={handleConfirmQuestionAndAnswer}>
                         <Label htmlFor="question">Текст вопроса:</Label>

@@ -2,7 +2,7 @@ import { useSocket } from "../../hooks/useSocket";
 import { Message } from "./style";
 
 function HeaderMessage() {
-    const {clientId, roomOwner, asker, gameReady} = useSocket();
+    const {clientId, roomOwner, asker, gameReady, gameStart, gameEnd} = useSocket();
 
     return (
         <>
@@ -12,10 +12,10 @@ function HeaderMessage() {
             {clientId != roomOwner && !asker && !gameReady && (
                 <Message>Хост назначает роли...</Message>
             )}
-            {clientId != asker && asker && !gameReady && (
+            {clientId != asker && asker && !gameReady && !gameStart && !gameEnd && (
                 <Message>Задающий пишет вопрос...</Message>
             )}
-            {clientId == asker && asker && !gameReady && (
+            {clientId == asker && asker && !gameReady && !gameStart && !gameEnd && (
                 <Message>Напишите вопрос и ответ</Message>
             )}
             {gameReady && (

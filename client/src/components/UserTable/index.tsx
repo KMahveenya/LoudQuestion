@@ -6,7 +6,7 @@ import askerImage from '../../assets/images/asker.png';
 import readerImage from '../../assets/images/reader.png';
 
 function UserTable() {
-    const {roomId, clientId, roomOwner, asker, roomUsers, reader, gameReady, sendMessage} = useSocket();
+    const {roomId, clientId, roomOwner, asker, roomUsers, reader, gameReady, gameStart, gameEnd, sendMessage} = useSocket();
 
     const [userRoles, setUserRoles] = useState<Map<string, "asker" | "reader">>(new Map());
     const [error, setError] = useState<string | null>(null);
@@ -44,6 +44,7 @@ function UserTable() {
 
         if (asker.length == 1 && reader.length == 1) {
             sendMessage('userRoles', {roomId, asker: asker[0], reader: reader[0]})
+            setUserRoles(new Map());
         } else {
             setError("Нужно выбрать по одному задающему и читающему");
         }
@@ -51,7 +52,7 @@ function UserTable() {
 
     return (
         <>
-            {(clientId != asker || !asker || gameReady) && (
+            {(clientId != asker || !asker || gameReady) && !gameStart&& !gameEnd  && (
                 <TableContainer>
                     <UsersTable>
                         <tbody>

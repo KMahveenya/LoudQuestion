@@ -19,6 +19,10 @@ interface SocketContextType {
     asker: string | null;
     reader: string | null;
     gameReady: boolean;
+    question: string | null;
+    answer: string | null;
+    gameStart: boolean;
+    gameEnd: boolean;
 }
 
 export const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -33,9 +37,14 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
     const [roomId, setRoomId] = useState(null);
     const [roomUsers, setRoomUsers] = useState({});
     const [roomOwner, setRoomOwner] = useState<string | null>(null);
+
     const [asker, setAsker] = useState<string | null>(null);
     const [reader, setReader] = useState<string | null>(null);
     const [gameReady, setGameReady] = useState(false);
+    const [question, setQuestion] = useState<string | null>(null);
+    const [answer, setAnswer] = useState<string | null>(null);
+    const [gameStart, setGameStart] = useState(false);
+    const [gameEnd, setGameEnd] = useState(false);
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000', {
@@ -61,6 +70,9 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
             setGameReady(false);
             setAsker(null);
             setReader(null);
+            setQuestion(null);
+            setAnswer(null);
+            setGameStart(false);
         });
 
         newSocket.on('reconnect', () => {
@@ -91,6 +103,28 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
             setGameReady(true);
         });
 
+        newSocket.on('question', (question: string) => {
+            setQuestion(question);
+        });
+
+        newSocket.on('answer', (answer: string) => {
+            setAnswer(answer);
+        });
+
+        newSocket.on('gameStart', () => {
+            setGameReady(false);
+            setGameStart(true);
+        });
+
+        newSocket.on('gameEnd', () => {
+            setGameStart(false);
+            setGameEnd(true);
+        });
+
+        newSocket.on('clearInfo', () => {
+            clearInfo();
+        });
+
         return () => {
             newSocket.disconnect();
             setSocket(null);
@@ -104,6 +138,16 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
             socket.emit(event, data);
         }
     }, [isConnected]);
+
+    const clearInfo = () => {
+        setAsker(null);
+        setReader(null);
+        setGameReady(false);
+        setGameStart(false);
+        setGameEnd(false);
+        setQuestion(null);
+        setAnswer(null);
+    }
 
     const value = {
         socket,
@@ -119,6 +163,10 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
         asker,
         reader,
         gameReady,
+        question,
+        answer,
+        gameStart,
+        gameEnd,
     };
 
     return (
