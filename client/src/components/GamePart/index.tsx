@@ -1,9 +1,10 @@
 import { useSocket } from "../../hooks/useSocket";
-import { SubmitButton } from "./style";
+import { SubmitButton, TextInput, Form, SubmitInput, QuestionContainer, AnswerContainer, MyAnswerContainer } from "./style";
 import { useEffect, useState } from "react";
+import Timer from "../Timer";
 
 function GamePart() {
-    const {clientId, roomId, roomOwner, gameReady, question, answer, gameStart, asker, gameEnd, sendMessage} = useSocket();
+    const {clientId, roomId, roomOwner, gameReady, question, answer, gameStart, asker, gameEnd, reader, sendMessage} = useSocket();
 
     const [myAnswer, setMyAnswer] = useState('');
     const [freezeAnswer, setFreezeAnswer] = useState(false);
@@ -32,34 +33,38 @@ function GamePart() {
                 <SubmitButton onClick={handleStartGame}>Начать игру</SubmitButton>
             )}
 
-            {question && (gameStart || gameEnd) && (
-                <div>
-                    <p>{question}</p>
-                </div>
-            )}
+            <Timer />
 
-            {answer && (
-                <div>
-                    <p>{answer}</p>
-                </div>
+            {question && (gameStart || gameEnd) && (
+                <QuestionContainer>
+                    {question}
+                </QuestionContainer>
             )}
+            {clientId == reader && gameStart && 
+                <AnswerContainer>
+                    {answer}
+                </AnswerContainer>
+            }
+            
 
             {gameStart && !freezeAnswer && asker != clientId && (
-                <form action={handleEnterAnswer}>
-                    <input type="text" placeholder="Ответ" value={myAnswer} onChange={(e) => setMyAnswer(e.target.value)}/>
-                    <input type="submit" value="Подтвердить" />
-                </form>
+                <MyAnswerContainer>
+                    <Form action={handleEnterAnswer}>
+                        <TextInput type="text" placeholder="Ответ" value={myAnswer} onChange={(e) => setMyAnswer(e.target.value)}/>
+                        <SubmitInput type="submit" value="Подтвердить" />
+                    </Form>
+                </MyAnswerContainer>
             )}
 
             {(gameStart || gameEnd) && freezeAnswer && asker != clientId && (
-                <p>{myAnswer}</p>
+                <MyAnswerContainer>{myAnswer}</MyAnswerContainer>
             )}
 
             {gameEnd && asker == clientId && (
-                <>
-                    <button onClick={handleEndGame}>Верно</button>
-                    <button onClick={handleEndGame}>Не верно</button>
-                </>
+                <MyAnswerContainer>
+                    <SubmitButton onClick={handleEndGame}>Верно</SubmitButton>
+                    <SubmitButton onClick={handleEndGame}>Не верно</SubmitButton>
+                </MyAnswerContainer>
             )}
         </>
     );
