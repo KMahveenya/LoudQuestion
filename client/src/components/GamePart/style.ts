@@ -65,7 +65,7 @@ export const TextInput = styled.input `
 export const QuestionContainer = styled.div`
   background-color: #ffffffff;
   width: 90%;
-  min-height: 50%;
+  min-height: 45%;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
