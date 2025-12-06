@@ -1,0 +1,29 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url('./assets/images/bg.png');
+}
+
+@font-face {
+  font-family: 'QuestionRegularFont';
+  src: url('../public/fonts/Caveat-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'QuestionBoldFont';
+  src: url('../public/fonts/Caveat-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BasicFont';
+  src: url('../public/fonts/Huninn-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
