@@ -47,7 +47,7 @@ export const SocketProvider = ({ children } : SocketProviderProps) => {
     const [gameEnd, setGameEnd] = useState(false);
 
     useEffect(() => {
-        const newSocket = io('http://localhost:3000', {
+        const newSocket = io('wss://loudquestion.onrender.com', {
             autoConnect: true,
             reconnection: true,
             reconnectionDelay: 1000,
