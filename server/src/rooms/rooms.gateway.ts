@@ -4,10 +4,11 @@ import { RoomsService } from './rooms.service';
 
 @WebSocketGateway({
   cors: {
-    origin: "http://localhost:5173",
-    credentials: true
+    origin: ["http://localhost:5173", "https://loud-question.vercel.app", "https://loudquestion.onrender.com"],
+    credentials: true,
   }
 })
+
 export class RoomsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
